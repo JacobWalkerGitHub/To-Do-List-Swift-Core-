@@ -10,47 +10,56 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-
+    @Query private var items: [ToDoItem]
+    
+    @State private var addToDoItem = false
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+        VStack {
+            ZStack {
+                VStack {
+                    header
+                    ScrollView {
+                        ForEach(items) { item in
+                            let newItem = item
+                            ToDoListView(item: newItem)
+                        }
+                        .onDelete(perform: deleteItems)
                     }
                 }
-                .onDelete(perform: deleteItems)
-            }
-#if os(macOS)
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-#endif
-            .toolbar {
-#if os(iOS)
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-#endif
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                
+                
+                HStack {
+                    ZStack {
+                        Circle()
+                            .frame(width: 75, height: 75)
+                            .foregroundStyle(.blue)
+                            .shadow(color: .black, radius: 5.0)
+                        
+                        
+                        Image(systemName: "plus")
+                            .font(.title)
+                            .foregroundStyle(.white)
+                            .frame(width: 75, height: 75)
+                            .onTapGesture {
+                                withAnimation(.spring()) {
+                                    addToDoItem.toggle()
+                                }
+                            }
                     }
+                    .position(x: 350, y: UIScreen.main.bounds.height - 125)
+                    .transition(.scale)
                 }
+                
             }
-        } detail: {
-            Text("Select an item")
+        }
+        .background(Color("Background"))
+        
+        .sheet(isPresented: $addToDoItem) {
+            ToDoView(addToDo: $addToDoItem)
         }
     }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
+    
+    
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
@@ -59,8 +68,25 @@ struct ContentView: View {
         }
     }
 }
-
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: ToDoItem.self, inMemory: true)
 }
+
+extension ContentView  {
+    var header: some View {
+        HStack {
+            Text("To Do")
+                .font(.title)
+                .fontWeight(.semibold)
+                .foregroundStyle(.white)
+            Spacer()
+            EditButton()
+                .foregroundStyle(.white)
+                .font(.title3)
+        }
+        .padding(.horizontal)
+    }
+}
+
+
