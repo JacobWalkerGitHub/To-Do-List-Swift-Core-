@@ -13,13 +13,13 @@ final class ToDoItem: Identifiable {
     var id: UUID = UUID()
     var timestamp: Date
     var title: String
-    var summary: String
+    var sumarry: String
     var isCompleted: Bool
     
-    init (timestamp: Date, title: String, summary: String, isCompleted: Bool) {
+    init (timestamp: Date, title: String, sumarry: String, isCompleted: Bool) {
         self.timestamp = timestamp
         self.title = title
-        self.summary = summary
+        self.sumarry = sumarry
         self.isCompleted = isCompleted
     }
 }

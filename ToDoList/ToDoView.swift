@@ -12,7 +12,7 @@ struct ToDoView: View {
     
     @State private var title: String = ""
     @State private var date: Date = Date()
-    @State private var summary: String = ""
+    @State private var sumarry: String = ""
     
     @Binding var addToDo: Bool
     
@@ -40,8 +40,8 @@ struct ToDoView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 40)
             
-            TextField("Summary", text: $summary)
-                .frame(width: .infinity, height: 100)
+            TextField("notes", text: $sumarry)
+                .frame(height: 100)
                 .padding()
                 .foregroundStyle(.black)
                 .background(Color(.systemGray6))
@@ -51,7 +51,7 @@ struct ToDoView: View {
             Spacer()
             VStack {
                 Button {
-                    let newItem = ToDoItem(timestamp: date, title: title, summary: summary, isCompleted: false)
+                    let newItem = ToDoItem(timestamp: date, title: title, sumarry: sumarry, isCompleted: false)
                     modelContext.insert(newItem)
                     addToDo = false
                 } label: {

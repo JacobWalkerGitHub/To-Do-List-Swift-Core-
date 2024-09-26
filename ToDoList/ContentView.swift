@@ -13,49 +13,58 @@ struct ContentView: View {
     @Query private var items: [ToDoItem]
     
     @State private var addToDoItem = false
+    @State private var viewToDoItem = false
     var body: some View {
-        VStack {
-            ZStack {
-                VStack {
-                    header
-                    ScrollView {
-                        ForEach(items) { item in
-                            let newItem = item
-                            ToDoListView(item: newItem)
-                        }
-                        .onDelete(perform: deleteItems)
-                    }
-                }
-                
-                
-                HStack {
-                    ZStack {
-                        Circle()
-                            .frame(width: 75, height: 75)
-                            .foregroundStyle(.blue)
-                            .shadow(color: .black, radius: 5.0)
-                        
-                        
-                        Image(systemName: "plus")
-                            .font(.title)
-                            .foregroundStyle(.white)
-                            .frame(width: 75, height: 75)
-                            .onTapGesture {
-                                withAnimation(.spring()) {
-                                    addToDoItem.toggle()
+        NavigationStack {
+            VStack {
+                ZStack {
+                    VStack {
+                        header
+                        ScrollView {
+                            ForEach(items) { item in
+                                let newItem = item
+                                
+                                NavigationLink {
+                                    ToDoItemView(item: newItem)
+                                } label: {
+                                    ToDoListView(item: newItem)
                                 }
                             }
+                            .onDelete(perform: deleteItems)
+                        }
                     }
-                    .position(x: 350, y: UIScreen.main.bounds.height - 125)
-                    .transition(.scale)
+                    
+                    
+                    HStack {
+                        ZStack {
+                            Circle()
+                                .frame(width: 75, height: 75)
+                                .foregroundStyle(.blue)
+                                .shadow(color: .black, radius: 5.0)
+                            
+                            
+                            Image(systemName: "plus")
+                                .font(.title)
+                                .foregroundStyle(.white)
+                                .frame(width: 75, height: 75)
+                                .onTapGesture {
+                                    withAnimation(.spring()) {
+                                        addToDoItem.toggle()
+                                    }
+                                }
+                        }
+                        .position(x: 350, y: UIScreen.main.bounds.height - 125)
+                        .transition(.scale)
+                    }
+                    
                 }
-                
             }
-        }
-        .background(Color("Background"))
-        
-        .sheet(isPresented: $addToDoItem) {
-            ToDoView(addToDo: $addToDoItem)
+            .background(Color("Background"))
+            
+            .sheet(isPresented: $addToDoItem) {
+                ToDoView(addToDo: $addToDoItem)
+            }
+            
         }
     }
     
