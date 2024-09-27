@@ -14,6 +14,8 @@ struct ContentView: View {
     
     @State private var addToDoItem = false
     @State private var viewToDoItem = false
+    @State private var isCompleted: Bool = false
+    @State private var isEditing: Bool = true
     var body: some View {
         NavigationStack {
             VStack {
@@ -25,9 +27,12 @@ struct ContentView: View {
                                 let newItem = item
                                 
                                 NavigationLink {
-                                    ToDoItemView(item: newItem)
+                                    ToDoItemView(item: newItem, isEditing: $isEditing)
                                 } label: {
                                     ToDoListView(item: newItem)
+                                }
+                                .onAppear {
+                                    isCompleted = newItem.isCompleted
                                 }
                             }
                             .onDelete(perform: deleteItems)
@@ -39,13 +44,13 @@ struct ContentView: View {
                         ZStack {
                             Circle()
                                 .frame(width: 75, height: 75)
-                                .foregroundStyle(.blue)
+                                .foregroundStyle(Color(.systemGray5))
                                 .shadow(color: .black, radius: 5.0)
                             
                             
                             Image(systemName: "plus")
                                 .font(.title)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Color("Background"))
                                 .frame(width: 75, height: 75)
                                 .onTapGesture {
                                     withAnimation(.spring()) {
@@ -64,7 +69,6 @@ struct ContentView: View {
             .sheet(isPresented: $addToDoItem) {
                 ToDoView(addToDo: $addToDoItem)
             }
-            
         }
     }
     

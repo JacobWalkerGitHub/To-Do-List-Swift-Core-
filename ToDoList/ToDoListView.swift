@@ -15,6 +15,13 @@ struct ToDoListView: View {
         self.item = item
     }
     
+    private var formattedDate: String {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            formatter.timeStyle = .short
+        return formatter.string(from: item.timestamp)
+    }
+    
     var body: some View {
         VStack {
             HStack {
@@ -52,7 +59,7 @@ struct ToDoListView: View {
                         .font(.title2)
                         .foregroundStyle(.white)
                         .fontWeight(.bold)
-                    Text("item.timestamp")
+                    Text(formattedDate)
                         .font(.headline)
                         .foregroundStyle(Color(.systemGray2))
                 }
@@ -63,7 +70,7 @@ struct ToDoListView: View {
                     .font(.system(size: 25))
             }
             .padding(.trailing, 30)
-            .frame(width: .infinity, height: 75)
+            .frame(height: 75)
         }
         .background(Color("Background"))
     }

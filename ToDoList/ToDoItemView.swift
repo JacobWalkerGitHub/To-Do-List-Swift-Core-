@@ -9,22 +9,33 @@ import SwiftUI
 
 struct ToDoItemView: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) private var modelContext
     
     var item: ToDoItem
     
-//    private var formattedDate: String {
-//            let formatter = DateFormatter()
-//            formatter.dateStyle = .medium
-//            formatter.timeStyle = .short
-//            return formatter.string(from: item.timestamp)
-//        }
+    @State private var isCompleted: Bool = false
+    @State private var title: String = ""
+    @State private var sumarry: String = ""
+    @State private var date = Date()
     
-    @State private var isEditing = false
+    @Binding var isEditing: Bool
+    
+    @State private var openSetting: Bool = false
+    private var formattedDate: String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: item.timestamp)
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
             HStack(alignment: .top) {
                 Button {
                     dismiss()
+                    if !isEditing {
+                        isEditing.toggle()
+                    }
                 } label: {
                     Image(systemName: "chevron.left")
                         .font(.title)
@@ -33,13 +44,20 @@ struct ToDoItemView: View {
                 
                 Spacer()
                 
-                Button {
-                    isEditing.toggle()
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .font(.title)
-                        .foregroundStyle(.white)
-                }
+                    Button {
+                        openSetting.toggle()
+                    } label: {
+                        if openSetting {
+                            Image(systemName: "checkmark")
+                                .font(.title)
+                                .foregroundStyle(.white)
+                        } else {
+                            Image(systemName: "ellipsis")
+                                .font(.title)
+                                .foregroundStyle(.white)
+                        }
+                    }
+                
             }
             .padding()
             
@@ -51,8 +69,9 @@ struct ToDoItemView: View {
                         .foregroundStyle(Color("Foreground"))
                         .shadow(radius: 10.0, x: 0, y: 10)
                     
-                    Text(item.title)
+                    TextField(title, text: $title)
                         .font(.title)
+                        .disabled(isEditing)
                         .foregroundStyle(.white)
                         .fontWeight(.semibold)
                         .padding()
@@ -67,11 +86,13 @@ struct ToDoItemView: View {
                         .foregroundStyle(Color("Foreground"))
                         .shadow(radius: 10.0, x: 0, y: 10)
                     
-                    Text("formattedDate")
+                    DatePicker("Date", selection: $date)
                         .font(.title2)
                         .fontWeight(.semibold)
                         .foregroundStyle(Color(.systemGray5))
+                        .disabled(isEditing)
                         .padding()
+                    
                 }
                 .padding(.vertical)
                 
@@ -82,10 +103,12 @@ struct ToDoItemView: View {
                         .foregroundStyle(Color("Foreground"))
                         .shadow(radius: 10.0, x: 0, y: 10)
                     
-                    Text(item.sumarry)
+                    TextField(sumarry, text: $sumarry)
                         .font(.title3)
+                        .disabled(isEditing)
                         .foregroundStyle(.white)
                         .padding()
+                    
                 }
                 .padding(.vertical)
                 
@@ -93,32 +116,55 @@ struct ToDoItemView: View {
             }
             .padding(.horizontal)
             
-            
-            Button {
-                item.isCompleted.toggle()
-            } label: {
-                if !item.isCompleted {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 15)
-                            .frame(height: 50)
-                            .foregroundStyle(Color(.systemGray5))
-                            .shadow(radius: 10.0, x: 0, y: 10)
-                        
-                        Text("Completed")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(Color("Background"))
-                            .padding()
+            if isEditing {
+                Button {
+                    item.isCompleted.toggle()
+                } label: {
+                    if !isCompleted {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 15)
+                                .frame(height: 50)
+                                .foregroundStyle(Color(.systemGray5))
+                                .shadow(radius: 10.0, x: 0, y: 10)
+                            
+                            Text("Complete")
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(Color("Background"))
+                                .padding()
+                        }
+                        .padding()
+                    } else {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 15)
+                                .frame(height: 50)
+                                .foregroundStyle(Color(.systemGray5))
+                                .shadow(radius: 10.0, x: 0, y: 10)
+                            
+                            Text("Completed")
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(Color("Background"))
+                                .padding()
+                        }
+                        .padding()
                     }
-                    .padding()
-                } else {
+                }
+            } else {
+                Button {
+                    item.title = title
+                    item.timestamp = date
+                    item.summary = sumarry
+                    item.isCompleted = isCompleted
+                    isEditing.toggle()
+                } label: {
                     ZStack {
                         RoundedRectangle(cornerRadius: 15)
                             .frame(height: 50)
                             .foregroundStyle(Color(.systemGray5))
                             .shadow(radius: 10.0, x: 0, y: 10)
                         
-                        Text("Complete")
+                        Text("Save")
                             .font(.title2)
                             .fontWeight(.semibold)
                             .foregroundStyle(Color("Background"))
@@ -133,13 +179,23 @@ struct ToDoItemView: View {
         .background(Color("Background"))
         .navigationBarBackButtonHidden(true)
         
-        .sheet(isPresented: $isEditing) {
+        .onAppear {
+            isCompleted = item.isCompleted
+            date = item.timestamp
+            sumarry = item.summary
+            title = item.title
+        }
+        .onChange(of: item.isCompleted, { oldValue, newValue in
+            isCompleted = item.isCompleted
+        })
+        
+        .sheet(isPresented: $openSetting) {
             
             VStack(spacing: 20) {
                 Spacer()
-
+                
                 Button {
-                    // Edit action
+                    isEditing.toggle()
                 } label: {
                     ZStack {
                         RoundedRectangle(cornerRadius: 10)
@@ -154,9 +210,10 @@ struct ToDoItemView: View {
                     }
                 }
                 .padding(.horizontal)
-
+                
                 Button {
-                    // Delete action
+                    modelContext.delete(item)
+                    dismiss()
                 } label: {
                     ZStack {
                         RoundedRectangle(cornerRadius: 10)
@@ -177,9 +234,9 @@ struct ToDoItemView: View {
             .background(Color("Background"))
             .presentationDetents([.fraction(0.3)])
         }
-
-    }
         
+    }
+    
 }
 
 //#Preview {

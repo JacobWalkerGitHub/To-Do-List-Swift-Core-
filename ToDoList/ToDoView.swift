@@ -12,53 +12,74 @@ struct ToDoView: View {
     
     @State private var title: String = ""
     @State private var date: Date = Date()
-    @State private var sumarry: String = ""
+    @State private var summary: String = ""
     
     @Binding var addToDo: Bool
     
     var body: some View {
         
-        VStack {
-            Spacer()
-            TextField("Title", text: $title)
-                .padding()
-                .foregroundStyle(.black)
-                .background(Color(.systemGray6))
-                .clipShape(RoundedRectangle(cornerRadius: 10.0))
-                .shadow(radius: 5.0, x: 0, y: 5.0)
-                .padding(.horizontal)
-                .font(.headline)
-                .padding(.bottom, 75)
-                .padding(.top, 25)
+        VStack(alignment: .leading) {
             
-            DatePicker("Select a date", selection: $date)
-                .padding()
-                .foregroundStyle(.black)
-                .background(Color(.systemGray6))
-                .clipShape(RoundedRectangle(cornerRadius: 10.0))
-                .shadow(radius: 5.0, x: 0, y: 5.0)
-                .padding(.horizontal)
-                .padding(.bottom, 40)
-            
-            TextField("notes", text: $sumarry)
-                .frame(height: 100)
-                .padding()
-                .foregroundStyle(.black)
-                .background(Color(.systemGray6))
-                .clipShape(RoundedRectangle(cornerRadius: 10.0))
-                .shadow(radius: 5.0, x: 0, y: 5.0)
-                .padding(.horizontal)
-            Spacer()
+            VStack(alignment: .leading) {
+                
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 15)
+                        .frame(height: 75)
+                        .foregroundStyle(Color("Foreground"))
+                        .shadow(radius: 10.0, x: 0, y: 10)
+                    
+                    TextField("Title", text: $title)
+                        .font(.title)
+                        .foregroundStyle(.white)
+                        .fontWeight(.semibold)
+                        .padding()
+                }
+                .padding(.vertical)
+                
+                
+                
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 15)
+                        .frame(height: 75)
+                        .foregroundStyle(Color("Foreground"))
+                        .shadow(radius: 10.0, x: 0, y: 10)
+                    
+                    DatePicker("Date", selection: $date)
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(Color(.systemGray5))
+                        .padding()
+                }
+                .padding(.vertical)
+                
+                
+                ZStack(alignment: .topLeading) {
+                    RoundedRectangle(cornerRadius: 15)
+                        .frame(height: 200)
+                        .foregroundStyle(Color("Foreground"))
+                        .shadow(radius: 10.0, x: 0, y: 10)
+                    
+                    TextField("Notes", text: $summary)
+                        .font(.title3)
+                        .foregroundStyle(.white)
+                        .padding()
+                    
+                }
+                .padding(.vertical)
+                
+                
+            }
+            .padding(.horizontal)
             VStack {
                 Button {
-                    let newItem = ToDoItem(timestamp: date, title: title, sumarry: sumarry, isCompleted: false)
+                    let newItem = ToDoItem(timestamp: date, title: title, summary: summary, isCompleted: false)
                     modelContext.insert(newItem)
                     addToDo = false
                 } label: {
                     ZStack {
                         RoundedRectangle(cornerRadius: 15.0)
                             .frame(height: 50)
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Color(.systemGray5))
                             .shadow(radius: 10.0)
                         
                         Text("Add")
