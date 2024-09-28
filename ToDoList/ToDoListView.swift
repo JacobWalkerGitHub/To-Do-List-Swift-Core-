@@ -70,9 +70,10 @@ struct ToDoListView: View {
                     .font(.system(size: 25))
             }
             .padding(.trailing, 30)
-            .frame(height: 75)
+            .frame(height: 50)
         }
         .background(Color("Background"))
+        .padding(.top)
     }
 }
 

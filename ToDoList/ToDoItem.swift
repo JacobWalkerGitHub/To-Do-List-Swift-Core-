@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class ToDoItem: Identifiable {
+final class ToDoItem: Identifiable, ObservableObject {
     var id: UUID = UUID()
     var timestamp: Date
     var title: String

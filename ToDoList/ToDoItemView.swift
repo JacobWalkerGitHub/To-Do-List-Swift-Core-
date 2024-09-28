@@ -69,7 +69,7 @@ struct ToDoItemView: View {
                         .foregroundStyle(Color("Foreground"))
                         .shadow(radius: 10.0, x: 0, y: 10)
                     
-                    TextField(title, text: $title)
+                    TextField(title, text: $title, prompt: Text("Title").foregroundStyle(.white))
                         .font(.title)
                         .disabled(isEditing)
                         .foregroundStyle(.white)
@@ -89,10 +89,12 @@ struct ToDoItemView: View {
                     DatePicker("Date", selection: $date)
                         .font(.title2)
                         .fontWeight(.semibold)
-                        .foregroundStyle(Color(.systemGray5))
+                        .datePickerStyle(.compact)
+                        .labelsHidden()
                         .disabled(isEditing)
-                        .padding()
-                    
+                        .colorScheme(.dark)
+                        .fontWeight(.semibold)
+                        .font(.title2)
                 }
                 .padding(.vertical)
                 
@@ -103,11 +105,14 @@ struct ToDoItemView: View {
                         .foregroundStyle(Color("Foreground"))
                         .shadow(radius: 10.0, x: 0, y: 10)
                     
-                    TextField(sumarry, text: $sumarry)
+                    TextField(sumarry, text: $sumarry, prompt: Text("Notes").foregroundStyle(.white), axis: .vertical)
                         .font(.title3)
                         .disabled(isEditing)
+                        .lineLimit(6)
                         .foregroundStyle(.white)
                         .padding()
+                        
+                        
                     
                 }
                 .padding(.vertical)
@@ -212,6 +217,7 @@ struct ToDoItemView: View {
                 .padding(.horizontal)
                 
                 Button {
+                    openSetting.toggle()
                     modelContext.delete(item)
                     dismiss()
                 } label: {

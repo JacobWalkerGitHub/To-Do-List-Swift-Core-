@@ -28,7 +28,7 @@ struct ToDoView: View {
                         .foregroundStyle(Color("Foreground"))
                         .shadow(radius: 10.0, x: 0, y: 10)
                     
-                    TextField("Title", text: $title)
+                    TextField("", text: $title, prompt: Text("Title").foregroundStyle(.white))
                         .font(.title)
                         .foregroundStyle(.white)
                         .fontWeight(.semibold)
@@ -47,8 +47,11 @@ struct ToDoView: View {
                     DatePicker("Date", selection: $date)
                         .font(.title2)
                         .fontWeight(.semibold)
-                        .foregroundStyle(Color(.systemGray5))
+                        .foregroundStyle(.white)
                         .padding()
+                        .colorScheme(.dark)
+                        .labelsHidden()
+
                 }
                 .padding(.vertical)
                 
@@ -59,9 +62,10 @@ struct ToDoView: View {
                         .foregroundStyle(Color("Foreground"))
                         .shadow(radius: 10.0, x: 0, y: 10)
                     
-                    TextField("Notes", text: $summary)
+                    TextField("", text: $summary, prompt: Text("Notes").foregroundStyle(.white), axis: .vertical)
                         .font(.title3)
                         .foregroundStyle(.white)
+                        .lineLimit(6)
                         .padding()
                     
                 }
@@ -84,7 +88,7 @@ struct ToDoView: View {
                         
                         Text("Add")
                             .font(.title2)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color("Background"))
                             .fontWeight(.semibold)
                     }
                     .padding(.horizontal)

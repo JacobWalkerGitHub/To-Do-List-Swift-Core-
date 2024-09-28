@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  ToDoList
-//
-//  Created by Jacob Walker on 9/23/24.
-//
-
 import SwiftUI
 import SwiftData
 
@@ -14,8 +7,9 @@ struct ContentView: View {
     
     @State private var addToDoItem = false
     @State private var viewToDoItem = false
-    @State private var isCompleted: Bool = false
     @State private var isEditing: Bool = true
+    @State private var hasCompletedTasks: Bool = false
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -23,22 +17,42 @@ struct ContentView: View {
                     VStack {
                         header
                         ScrollView {
-                            ForEach(items) { item in
-                                let newItem = item
-                                
-                                NavigationLink {
-                                    ToDoItemView(item: newItem, isEditing: $isEditing)
-                                } label: {
-                                    ToDoListView(item: newItem)
-                                }
-                                .onAppear {
-                                    isCompleted = newItem.isCompleted
+                            VStack {
+                                ForEach(items) { item in
+                                    if !item.isCompleted {
+                                        NavigationLink {
+                                            ToDoItemView(item: item, isEditing: $isEditing)
+                                        } label: {
+                                            ToDoListView(item: item)
+                                        }
+                                    }
                                 }
                             }
-                            .onDelete(perform: deleteItems)
+                            
+                            VStack(alignment: .leading) {
+                                if hasCompletedTasks {
+                                    VStack(alignment: .leading) {
+                                        Text("Completed")
+                                            .foregroundStyle(.white)
+                                            .font(.title2)
+                                            .fontWeight(.semibold)
+                                            .padding(.horizontal)
+                                            .padding(.top, 50)
+                                    }
+                                    
+                                    ForEach(items) { item in
+                                        if item.isCompleted {
+                                            NavigationLink {
+                                                ToDoItemView(item: item, isEditing: $isEditing)
+                                            } label: {
+                                                ToDoListView(item: item)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                    
                     
                     HStack {
                         ZStack {
@@ -46,7 +60,6 @@ struct ContentView: View {
                                 .frame(width: 75, height: 75)
                                 .foregroundStyle(Color(.systemGray5))
                                 .shadow(color: .black, radius: 5.0)
-                            
                             
                             Image(systemName: "plus")
                                 .font(.title)
@@ -61,32 +74,35 @@ struct ContentView: View {
                         .position(x: 350, y: UIScreen.main.bounds.height - 125)
                         .transition(.scale)
                     }
-                    
                 }
             }
             .background(Color("Background"))
-            
             .sheet(isPresented: $addToDoItem) {
                 ToDoView(addToDo: $addToDoItem)
             }
-        }
-    }
-    
-    
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
+            .onAppear {
+                // Check for completed tasks when the view appears
+                updateHasCompletedTasks()
+            }
+            .onChange(of: items) { _ in
+                // Check for completed tasks when items change
+                updateHasCompletedTasks()
             }
         }
     }
+    
+    private func updateHasCompletedTasks() {
+        // Update hasCompletedTasks based on the current items
+        hasCompletedTasks = items.contains { $0.isCompleted }
+    }
 }
+
 #Preview {
     ContentView()
         .modelContainer(for: ToDoItem.self, inMemory: true)
 }
 
-extension ContentView  {
+extension ContentView {
     var header: some View {
         HStack {
             Text("To Do")
@@ -94,12 +110,7 @@ extension ContentView  {
                 .fontWeight(.semibold)
                 .foregroundStyle(.white)
             Spacer()
-            EditButton()
-                .foregroundStyle(.white)
-                .font(.title3)
         }
         .padding(.horizontal)
     }
 }
-
-
